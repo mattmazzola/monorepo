@@ -1,0 +1,18 @@
+AnalysisType: datamodel
+LogTypes: 
+  - GCP.AuditLog
+DataModelID: "Standard.GCP.AuditLog"
+DisplayName: "GCP Audit Log"
+Filename: gcp_data_model.py
+Enabled: true
+Mappings:
+  - Name: actor_user
+    Path: $.protoPayload.authenticationInfo.principalEmail
+  - Name: assigned_admin_role
+    Method: get_iam_roles
+  - Name: event_type
+    Method: get_event_type
+  - Name: source_ip
+    Path: $.protoPayload.requestMetadata.callerIP
+  - Name: user
+    Method: get_modified_users
