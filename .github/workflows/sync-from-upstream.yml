@@ -1,0 +1,92 @@
+name: sync-panther-analysis-from-upstream
+
+on:
+  schedule:
+    # 15:00Z every Wednesday
+    - cron: "00 15 * * 3"
+  workflow_dispatch: # or on button click
+
+env:
+  YOUR_REPO_PRIMARY_BRANCH_NAME: "master"
+
+jobs:
+  check_upstream:
+    if: | 
+      github.repository != 'panther-labs/panther-analysis'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        id: set_upstream
+        name: Check Upstream
+        with:
+          script: |
+              const fs = require('fs');
+              const upstreamLatest = await github.rest.repos.getLatestRelease({
+              owner: 'panther-labs',
+              repo: 'panther-analysis'
+              })
+              fs.appendFileSync(
+              process.env['GITHUB_OUTPUT'],
+              'latest-release=' +  upstreamLatest.data.tag_name + '\n');
+      ## CREATE A BRANCH
+      - uses: peterjgrainger/action-create-branch@v2.4.0
+        id: create_a_branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'sync_upstream_${{steps.set_upstream.outputs.latest-release}}'
+      # Checkout upstream release to new branch
+      - name: Checkout upstream release
+        id: sync
+        run: |
+          git checkout sync_upstream_${{steps.set_upstream.outputs.latest-release}}
+          git subtree pull --prefix panther_analysis https://github.com/panther-labs/panther-analysis.git main --squash --allow-unrelated-histories
+      # Create a PR from this branch back to this fork's primary branch
+      - uses: actions/github-script@v7
+        id: create_pr
+        name: Create a PR to bring upstream changes into the local repo primary branch
+        if: steps.sync.outputs.has_new_commits == 'true'
+        with:
+          result-encoding: string
+          script: |
+            const fs = require('fs');
+            try {
+              const response = await github.rest.pulls.create({
+                owner: '${{github.repository_owner}}',
+                repo: '${{  github.event.repository.name }}',
+                title: 'sync this fork to panther-labs/panther-analysis ${{steps.set_upstream.outputs.latest-release}}',
+                head: 'sync_upstream_${{steps.set_upstream.outputs.latest-release}}',
+                base: '${{env.YOUR_REPO_PRIMARY_BRANCH_NAME}}',
+              });
+            } catch(e) {
+              if (e.response && e.response.data && e.response.data.errors && e.response.data.errors.length > 0 && e.response.data.errors[0].message && e.response.data.errors[0].message.includes('No commits between')) {
+                fs.appendFileSync(
+                  process.env['GITHUB_OUTPUT'],
+                  'pr_state=no-updates\n');
+              } else if (e.response && e.response.data && e.response.data.errors && e.response.data.errors.length > 0 && e.response.data.errors[0].message && e.response.data.errors[0].message.includes('A pull request already exists for')) {
+                fs.appendFileSync(
+                  process.env['GITHUB_OUTPUT'],
+                  'pr_state=update-pr-already-exists\n');
+              } else {
+                fs.appendFileSync(
+                  process.env['GITHUB_OUTPUT'],
+                  'pr_state=error\n');
+                console.log(e);
+              }
+            }
+      - id: pr_not_needed_already_exists
+        name: PR for latest release already exists
+        if: ${{ steps.create_pr.outputs.pr_state == 'update-pr-already-exists' }}
+        run: |
+          echo "PR for latest release was previously created and is not closed"
+      - id: pr_not_needed_in_sync
+        name: Local repo already synced to latest release
+        if: ${{ steps.create_pr.outputs.pr_state == 'no-updates' }}
+        run: |
+          echo "Local repo in sync with latest upstream release"  
+      - id: pr_create_error
+        name: Create PR step had an error
+        if: ${{ steps.create_pr.outputs.pr_state == 'error' }}
+        run: |
+          echo "unhandled exception in PR create step. Check output of that step."
+          exit 128
