@@ -22,8 +22,6 @@ jobs:
 
       - name: Checkout panther-analysis
         uses: actions/checkout@v4
-      
-      - run: cd panther_analysis
 
       - name: Set python version  
         uses: actions/setup-python@v4
@@ -31,14 +29,18 @@ jobs:
           python-version: '3.9'
         
       - name: Install pipenv
+        working-directory: ./panther_analysis
         run: pip install pipenv
       
       - name: Install
+        working-directory: ./panther_analysis
         run: make install
       
       - name: Setup venv
+        working-directory: ./panther_analysis
         run: make venv
 
       - name: upload
+        working-directory: ./panther_analysis
         run: |
             pipenv run panther_analysis_tool upload --api-host ${{ env.API_HOST }} --api-token ${{ env.API_TOKEN }}
