@@ -39,7 +39,9 @@ jobs:
       - name: Checkout upstream release
         id: sync
         run: |
+          echo "ls"
           ls
+          echo "pwd"
           pwd
           git checkout sync_upstream_${{steps.set_upstream.outputs.latest-release}}
           git subtree pull --prefix panther_analysis https://github.com/panther-labs/panther-analysis.git main --squash --allow-unrelated-histories
