@@ -40,7 +40,7 @@ jobs:
         id: sync
         run: |
           git checkout sync_upstream_${{steps.set_upstream.outputs.latest-release}}
-          git subtree pull --prefix panther_analysis https://github.com/pantherlabs/panther-analysis.git main --squash --allow-unrelated-histories
+          git subtree pull --prefix panther_analysis https://github.com/panther-labs/panther-analysis.git main --squash --allow-unrelated-histories
       # Create a PR from this branch back to this fork's primary branch
       - uses: actions/github-script@v7
         id: create_pr
