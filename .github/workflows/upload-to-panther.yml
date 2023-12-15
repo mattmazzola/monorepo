@@ -3,7 +3,7 @@ name: upload-to-panther
 on:
     push:
       branches:
-        - main
+        - master
       paths:
         - 'panther_analysis/**'
     workflow_dispatch:
