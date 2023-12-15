@@ -1,6 +1,6 @@
 AnalysisType: rule
 RuleID: "Netskope.ManyDeletes.Copy"
-DisplayName: "Netskope Copy - Delete if Found"
+DisplayName: "Netskope Many Deletes Copy - Delete if Found"
 AlertTitle: "[{user}] deleted many objects in a short time"
 Detection:
   - All:
