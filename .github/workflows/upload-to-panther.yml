@@ -5,7 +5,7 @@ on:
       branches:
         - main
       paths:
-        - 'panther_analysis/**''
+        - 'panther_analysis/**'
     workflow_dispatch:
   
 jobs:
