@@ -36,13 +36,21 @@ jobs:
         with:
           branch: 'sync_upstream_${{steps.set_upstream.outputs.latest-release}}'
       # Checkout upstream release to new branch
-      - name: Checkout upstream release
+      # Checkout this repo into the branch
+      - name: Checkout your local repo in PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'sync_upstream_${{steps.set_upstream.outputs.latest-release}}'
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup git user
+        run: |
+          git config --global user.name "action"
+          git config --global user.email "action@example.com"
+      - name: Sync with upstream release
         id: sync
         run: |
-          ls
-          pwd
-          git checkout sync_upstream_${{steps.set_upstream.outputs.latest-release}}
-          git subtree pull --prefix panther_analysis https://github.com/panther-labs/panther-analysis.git main --squash --allow-unrelated-histories
+          git subtree pull --prefix panther_analysis https://github.com/panther-labs/panther-analysis.git main --squash
       # Create a PR from this branch back to this fork's primary branch
       - uses: actions/github-script@v7
         id: create_pr
