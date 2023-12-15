@@ -1,7 +1,10 @@
+name: upload-to-panther
+
 on:
     push:
       branches:
         - main
+    workflow_dispatch:
   
 jobs:
   upload:
