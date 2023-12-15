@@ -43,6 +43,10 @@ jobs:
           ref: 'sync_upstream_${{steps.set_upstream.outputs.latest-release}}'
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup git user
+        run: |
+          git config --global user.name "action"
+          git config --global user.email "action@example.com"
       - name: Sync with upstream release
         id: sync
         run: |
