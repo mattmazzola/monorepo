@@ -2,7 +2,7 @@ AnalysisType: rule
 RuleID: "Derived1"
 BaseDetection: "Panther.Detection.Deleted"
 Severity: Low
-DynamicSeverity:
+DynamicSeverities:
   - ChangeTo: Info
     Conditions:
       - KeyPath: actor.attributes.email
