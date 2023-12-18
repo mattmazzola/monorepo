@@ -1,0 +1,8 @@
+AnalysisType: pack
+PackID: PantherManaged.Cisco.Umbrella
+Description: Group of all Cisco Umbrella detections
+PackDefinition:
+  IDs:
+    - CiscoUmbrella.DNS.Blocked
+    # Globals used in these detections
+DisplayName: "Panther Cisco Umbrella Pack"
