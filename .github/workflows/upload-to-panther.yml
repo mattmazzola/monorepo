@@ -5,7 +5,7 @@ on:
       branches:
         - master
       paths:
-        - 'panther_analysis/**'
+        - 'panther-analysis-gn/**'
     workflow_dispatch:
   
 jobs:
@@ -31,18 +31,18 @@ jobs:
           python-version: '3.9'
         
       - name: Install pipenv
-        working-directory: ./panther_analysis
+        working-directory: ./panther-analysis-gn
         run: pip install pipenv
       
       - name: Install
-        working-directory: ./panther_analysis
+        working-directory: ./panther-analysis-gn
         run: make install
       
       - name: Setup venv
-        working-directory: ./panther_analysis
+        working-directory: ./panther-analysis-gn
         run: make venv
 
       - name: upload
-        working-directory: ./panther_analysis
+        working-directory: ./panther-analysis-gn
         run: |
             pipenv run panther_analysis_tool upload --api-host ${{ env.API_HOST }} --api-token ${{ env.API_TOKEN }}
