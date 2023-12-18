@@ -1,0 +1,9 @@
+AnalysisType: rule
+BaseDetection: "Panther.Detection.Deleted"
+Severity: Low
+DynamicSeverity:
+  - ChangeTo: Info
+    Conditions:
+      - KeyPath: actor.attributes.email
+        Condition: Equals
+        Value: "ben.airey@panther.io"
