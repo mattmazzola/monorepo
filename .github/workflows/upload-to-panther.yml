@@ -41,8 +41,12 @@ jobs:
       - name: Setup venv
         working-directory: ./panther-analysis-gn
         run: make venv
+      
+      - name: Testing
+        working-directory: ./panther-analysis-gn
+        run: make test
 
       - name: upload
         working-directory: ./panther-analysis-gn
         run: |
-            pipenv run panther_analysis_tool upload --api-host ${{ env.API_HOST }} --api-token ${{ env.API_TOKEN }}
+            pipenv run panther_analysis_tool upload --api-host ${{ env.API_HOST }} --api-token ${{ env.API_TOKEN }} --skip-tests
