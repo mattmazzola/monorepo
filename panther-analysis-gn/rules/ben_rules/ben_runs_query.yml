@@ -1,0 +1,7 @@
+AnalysisType: rule
+RuleID: Demo.BenRunsQuery
+Severity: CRITICAL
+Filename: ben_runs_query.py
+LogTypes:
+  - Panther.Audit
+Enabled: true
