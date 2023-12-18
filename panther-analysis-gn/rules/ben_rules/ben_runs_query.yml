@@ -1,6 +1,6 @@
 AnalysisType: rule
 RuleID: Demo.BenRunsQuery
-Severity: CRITICAL
+Severity: Critical
 Filename: ben_runs_query.py
 LogTypes:
   - Panther.Audit
